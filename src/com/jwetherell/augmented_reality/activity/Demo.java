@@ -24,10 +24,9 @@ import android.widget.Toast;
 
 import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.data.ARData;
-import com.jwetherell.augmented_reality.data.GooglePlacesDataSource;
+import com.jwetherell.augmented_reality.data.FreifunkDataSource;
 import com.jwetherell.augmented_reality.data.LocalDataSource;
 import com.jwetherell.augmented_reality.data.NetworkDataSource;
-import com.jwetherell.augmented_reality.data.WikipediaDataSource;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.widget.VerticalTextView;
 
@@ -38,7 +37,7 @@ import com.jwetherell.augmented_reality.widget.VerticalTextView;
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
 public class Demo extends AugmentedReality {
-	
+
     private static final String TAG = "Demo";
     private static final String locale = Locale.getDefault().getLanguage();
     private static final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(1);
@@ -73,10 +72,8 @@ public class Demo extends AugmentedReality {
         LocalDataSource localData = new LocalDataSource(this.getResources());
         ARData.addMarkers(localData.getMarkers());
 
-        NetworkDataSource wikipedia = new WikipediaDataSource(this.getResources());
-        sources.put("wiki", wikipedia);
-        NetworkDataSource googlePlaces = new GooglePlacesDataSource(this.getResources());
-        sources.put("googlePlaces", googlePlaces);
+        NetworkDataSource freifunkPlaces = new FreifunkDataSource(this.getResources());
+        sources.put("freifunk", freifunkPlaces);
     }
 
     /**
@@ -107,18 +104,18 @@ public class Demo extends AugmentedReality {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.v(TAG, "onOptionsItemSelected() item=" + item);
         switch (item.getItemId()) {
-            case R.id.showRadar:
-                showRadar = !showRadar;
-                item.setTitle(((showRadar) ? "Hide" : "Show") + " Radar");
-                break;
-            case R.id.showZoomBar:
-                showZoomBar = !showZoomBar;
-                item.setTitle(((showZoomBar) ? "Hide" : "Show") + " Zoom Bar");
-                zoomLayout.setVisibility((showZoomBar) ? LinearLayout.VISIBLE : LinearLayout.GONE);
-                break;
-            case R.id.exit:
-                finish();
-                break;
+        case R.id.showRadar:
+            showRadar = !showRadar;
+            item.setTitle(((showRadar) ? "Hide" : "Show") + " Radar");
+            break;
+        case R.id.showZoomBar:
+            showZoomBar = !showZoomBar;
+            item.setTitle(((showZoomBar) ? "Hide" : "Show") + " Zoom Bar");
+            zoomLayout.setVisibility((showZoomBar) ? LinearLayout.VISIBLE : LinearLayout.GONE);
+            break;
+        case R.id.exit:
+            finish();
+            break;
         }
         return true;
     }
@@ -169,7 +166,8 @@ public class Demo extends AugmentedReality {
     }
 
     private static boolean download(NetworkDataSource source, double lat, double lon, double alt) {
-        if (source == null) return false;
+        if (source == null)
+            return false;
 
         String url = null;
         try {
